@@ -35,6 +35,9 @@ const Indexing = () => {
     },
     faiss: {
       modes: ['flat', 'ivf', 'hnsw']
+    },
+    infinity: {
+      modes: ['hnsw', 'ivf', 'flat']
     }
   };
 

@@ -38,6 +38,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class VectorDBProvider(str, Enum):
+    MILVUS = "milvus"
+    PINECONE = "pinecone"
+    QDRANT = "qdrant"
+    WEAVIATE = "weaviate"
+    CHROMA = "chroma"
+    FAISS = "faiss"
+
 @app.post("/process")
 async def process_file(
     file: UploadFile = File(...),
@@ -255,6 +263,11 @@ async def index_embeddings(data: dict):
             
         config = VectorDBConfig(provider=vector_db, index_mode=index_mode)
         vector_store_service = VectorStoreService()
+        
+        # 根据不同的向量数据库选择不同的索引方法
+        # if vector_db == VectorDBProvider.INFINITY:
+        #     result = vector_store_service.index_embeddings_infinity(embedding_file, config)
+        # else:
         result = vector_store_service.index_embeddings(embedding_file, config)
         
         return result
@@ -269,8 +282,14 @@ async def index_embeddings(data: dict):
 async def get_providers():
     """获取支持的向量数据库列表"""
     try:
-        search_service = SearchService()
-        providers = search_service.get_providers()
+        providers = [
+            {"id": "milvus", "name": "Milvus"},
+            {"id": "pinecone", "name": "Pinecone"},
+            {"id": "qdrant", "name": "Qdrant"},
+            {"id": "weaviate", "name": "Weaviate"},
+            {"id": "chroma", "name": "Chroma"},
+            {"id": "faiss", "name": "FAISS"}
+        ]
         return {"providers": providers}
     except Exception as e:
         logger.error(f"Error getting providers: {str(e)}")
